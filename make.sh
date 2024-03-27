@@ -18,12 +18,12 @@ sudo chmod -R 777 "$GITHUB_WORKSPACE"/tools
 
 magiskboot="$GITHUB_WORKSPACE"/tools/magiskboot
 ksud="$GITHUB_WORKSPACE"/tools/ksud
-
 a7z="$GITHUB_WORKSPACE"/tools/7zzs
 zstd="$GITHUB_WORKSPACE"/tools/zstd
 payload_extract="$GITHUB_WORKSPACE"/tools/payload_extract
 erofs_extract="$GITHUB_WORKSPACE"/tools/extract.erofs
 erofs_mkfs="$GITHUB_WORKSPACE"/tools/mkfs.erofs
+vbmeta="$GITHUB_WORKSPACE"/tools/vbmeta-disable-verification"
 lpmake="$GITHUB_WORKSPACE"/tools/lpmake
 apktool_jar="java -jar "$GITHUB_WORKSPACE"/tools/apktool.jar"
 
@@ -124,6 +124,7 @@ done
 ### 解包结束
 
 ### 写入变量
+
 echo -e "${Red}- 开始写入变量"
 # 构建日期
 echo "build_time=$build_time" >>$GITHUB_ENV
@@ -140,6 +141,7 @@ echo "security_patch=$security_patch" >>$GITHUB_ENV
 base_line=$(grep "ro.system.build.id=" "$system_build_prop" | awk -F "=" '{print $2}')
 echo -e "${Blue}- 包基线版本: $base_line"
 echo "port_base_line=$base_line" >>$GITHUB_ENV
+
 ### 写入变量结束
 
 ### 功能修复
@@ -168,7 +170,8 @@ for vendor_build_prop in $(sudo find "$GITHUB_WORKSPACE"/"${device}"/ -type f -n
   sudo sed -i 's/build.date.utc=[^*]*/build.date.utc='"$build_utc"'/' "$vendor_build_prop"
   sudo sed -i 's/ro.mi.os.version.incremental=[^*]*/ro.mi.os.version.incremental='"$os_version"'/' "$vendor_build_prop"
 done
-# 精简部分应用（product分区）
+
+# 精简部分应用
 echo -e "${Red}- 精简部分应用"
 apps=("MIGalleryLockscreen" "MIUIDriveMode" "MIUIDuokanReader" "MIUIGameCenter" "MIUINewHomeMIUI15" "MIUINewHome" "MIUIYoupin" "MIUIHuanJi" "MIUIMiDrive" "MIUIVirtualSim" "ThirdAppAssistant" "XMRemoteController" "MIUIVipAccount" "MiuiScanner" "Xinre" "SmartHome" "MiShop" "MiRadio" "MIUICompass" "MediaEditor" "BaiduIME" "iflytek.inputmethod" "MIService" "MIUIEmail" "MIUIVideo" "MIUIMusicT")
 for app in "${apps[@]}"; do
@@ -179,11 +182,12 @@ for app in "${apps[@]}"; do
   fi
 done
 
-# 占位广告应用（product分区）
+# 占位广告应用
 echo -e "${Red}- 占位广告应用"
 sudo rm -rf "$GITHUB_WORKSPACE"/images/product/app/MSA/*
 sudo cp -f "$GITHUB_WORKSPACE"/"${device}"_files/MSA.apk "$GITHUB_WORKSPACE"/images/product/app/MSA
-# 替换完美图标（product分区）
+
+# 替换完美图标
 echo -e "${Red}- 替换完美图标"
 cd "$GITHUB_WORKSPACE"
 git clone https://github.com/pzcn/Perfect-Icons-Completion-Project.git icons --depth 1
@@ -213,16 +217,16 @@ for i in  vbmeta.img vbmeta_system.img; do
   sudo $vbmeta "$GITHUB_WORKSPACE"/Extra_dir/"$i"
 done
 
-# 常规修改（vendor分区）
+# 常规修改
 echo -e "${Red}- 常规修改"
 sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"/vendor/recovery-from-boot.p
 sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"/vendor/bin/install-recovery.sh
 
-# 修复 init 崩溃（vendor分区）
+# 修复 init 崩溃
 echo -e "${Red}- 修复 init 崩溃"
 sudo sed -i "/start qti-testscripts/d" "$GITHUB_WORKSPACE"/"${device}"/vendor/etc/init/hw/init.qcom.rc
 
-# 内置 TWRP （解压twrp到${device}"/firmware-update/）
+# 内置 TWRP
 echo -e "${Red}- 内置 TWRP"
 sudo unzip -o -q "$GITHUB_WORKSPACE"/"${device}"_files/recovery.zip -d "$GITHUB_WORKSPACE"/"${device}"/firmware-update/
 
@@ -230,7 +234,7 @@ sudo unzip -o -q "$GITHUB_WORKSPACE"/"${device}"_files/recovery.zip -d "$GITHUB_
 echo -e "${Red}- 添加刷机脚本"
 sudo unzip -o -q "$GITHUB_WORKSPACE"/tools/flashtools.zip -d "$GITHUB_WORKSPACE"/images
 
-# 移除 Android 签名校验（system分区）
+# 移除 Android 签名校验
 sudo mkdir -p "$GITHUB_WORKSPACE"/apk/
 echo -e "${Red}- 移除 Android 签名校验"
 sudo cp -rf "$GITHUB_WORKSPACE"/images/system/system/framework/services.jar "$GITHUB_WORKSPACE"/apk/services.apk
