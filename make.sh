@@ -23,7 +23,7 @@ zstd="$GITHUB_WORKSPACE"/tools/zstd
 payload_extract="$GITHUB_WORKSPACE"/tools/payload_extract
 erofs_extract="$GITHUB_WORKSPACE"/tools/extract.erofs
 erofs_mkfs="$GITHUB_WORKSPACE"/tools/mkfs.erofs
-vbmeta="$GITHUB_WORKSPACE"/tools/vbmeta-disable-verification"
+vbmeta="$GITHUB_WORKSPACE"/tools/vbmeta-disable-verification
 lpmake="$GITHUB_WORKSPACE"/tools/lpmake
 apktool_jar="java -jar "$GITHUB_WORKSPACE"/tools/apktool.jar"
 
