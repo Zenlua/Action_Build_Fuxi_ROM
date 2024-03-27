@@ -95,6 +95,7 @@ Start_Time
 $a7z x "$GITHUB_WORKSPACE"/${zip_name} -o"$GITHUB_WORKSPACE"/"${device}" payload.bin >/dev/null
 echo -e "${Red}- 开始解payload"
 $payload_extract -s -o "$GITHUB_WORKSPACE"/Extra_dir/ -i "$GITHUB_WORKSPACE"/"${device}"/payload.bin -x -T0
+sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"/payload.bin
 for i in product system system_ext; do
   echo -e "${Red}- 开始转移${i}"
   sudo mv -f "$GITHUB_WORKSPACE"/Extra_dir/$i.img "$GITHUB_WORKSPACE"/images/
