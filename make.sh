@@ -140,7 +140,7 @@ echo "security_patch=$security_patch" >>$GITHUB_ENV
 # 包基线版本
 base_line=$(grep "ro.system.build.id=" "$system_build_prop" | awk -F "=" '{print $2}')
 echo -e "${Blue}- 包基线版本: $base_line"
-echo "port_base_line=$base_line" >>$GITHUB_ENV
+echo "base_line=$base_line" >>$GITHUB_ENV
 
 ### 写入变量结束
 
