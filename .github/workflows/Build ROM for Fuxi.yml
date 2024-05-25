@@ -32,7 +32,7 @@ jobs:
           [ -z "$url2" ] && url2="store$(( $RANDOM % 8 + 1 ))"
           Linkrom="$(curl --dns-servers '1.1.1.1' -L -N -H $User -F file=@$GITHUB_WORKSPACE/zip/"${{ env.rom_name }}" https://${url2}.gofile.io/uploadFile | jq -r .data.downloadPage)"
           touch file.log
-          echo -e "版本: ${{ env.os_version }}\n安全补丁版本: ${{ env.security_patch }}\n基线版本: ${{ env.base_line }}\nLink rom: $Linkrom" > file.log
+          echo -e "版本: ${{ env.os_version }}\n安全补丁版本: ${{ env.security_patch }}\n基线版本: ${{ env.base_line }}\nLink rom: $Linkrom" | tee file.log
       - name: 上传到 Github Release
         uses: ncipollo/release-action@main
         with:
