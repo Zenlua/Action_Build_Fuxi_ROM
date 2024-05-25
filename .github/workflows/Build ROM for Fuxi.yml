@@ -27,20 +27,15 @@ jobs:
           sudo bash "$GITHUB_WORKSPACE"/make.sh ${{ github.event.inputs.URL }} $GITHUB_ENV $GITHUB_WORKSPACE
       - name: 处理 ROM
         run: |
-          mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
-          cd "$GITHUB_WORKSPACE"/GithubRelease
           User="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
           url2="$(curl -s https://api.gofile.io/getServer | jq -r .data.server)"
           [ -z "$url2" ] && url2="store$(( $RANDOM % 8 + 1 ))"
           Linkrom="$(curl -L -N -H $User -F file=@$GITHUB_WORKSPACE/zip/"${{ env.rom_name }}" https://${url2}.gofile.io/uploadFile | jq -r .data.downloadPage)"
-          #sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/${{ env.rom_name }} ${{ env.rom_name }}
-          cd "$GITHUB_WORKSPACE"
           touch file.log
           echo -e "版本: ${{ env.os_version }}\n安全补丁版本: ${{ env.security_patch }}\n基线版本: ${{ env.base_line }}\nLink rom: $Linkrom" > file.log
       - name: 上传到 Github Release
         uses: ncipollo/release-action@main
         with:
-          artifacts: ${{ github.workspace }}/GithubRelease/*
           name: ${{ env.os_version }}
           tag: ${{ env.os_version }}
           bodyFile: "${{ github.workspace }}/file.log"
